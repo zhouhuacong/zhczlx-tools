@@ -773,7 +773,7 @@
     }
 
     function hexToRgb(hex) {
-        var match = hex.replace(/^#/, '').match(/^([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i);
+        var match = hex.replace(/^#/, '').match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
         if (!match) return null;
         return {
             r: parseInt(match[1], 16),
