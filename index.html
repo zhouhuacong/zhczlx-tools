@@ -492,15 +492,9 @@
   }
 
   function getDefaultLang() {
-    // Check localStorage first, then browser preference, default to 'en'
+    // Use saved preference, default to English
     var stored = getStoredLang();
     if (stored && translations[stored]) return stored;
-    var browserLang = (navigator.language || navigator.userLanguage || '').split('-')[0];
-    if (browserLang === 'zh') return 'zh-CN';
-    if (browserLang === 'ja') return 'ja';
-    if (browserLang === 'ko') return 'ko';
-    if (browserLang === 'fr') return 'fr';
-    if (browserLang === 'de') return 'de';
     return 'en';
   }
 
