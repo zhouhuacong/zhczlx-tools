@@ -96,6 +96,64 @@
   }
 }
 
+/* ===== MANUAL THEME OVERRIDES (via data-theme attribute) ===== */
+
+/* Dark — manual override for system light mode */
+html[data-theme="dark"] {
+  --bg-primary: #0a0a0b !important;
+  --bg-secondary: #111113 !important;
+  --bg-tertiary: #18181b !important;
+  --bg-card: #111113 !important;
+  --bg-input: #18181b !important;
+  --bg-hover: #27272a !important;
+  --bg-toolbar: #18181b !important;
+
+  --text-primary: #fafafa !important;
+  --text-secondary: #a1a1aa !important;
+  --text-tertiary: #71717a !important;
+  --text-placeholder: #52525b !important;
+  --text-inverse: #0a0a0b !important;
+
+  --border-color: rgba(255, 255, 255, 0.08) !important;
+  --border-color-strong: rgba(255, 255, 255, 0.12) !important;
+
+  --shadow-sm: 0px 0px 0px 1px rgba(255,255,255,0.06), 0px 1px 2px rgba(0,0,0,0.2) !important;
+  --shadow-md: 0px 0px 0px 1px rgba(255,255,255,0.06), 0px 2px 4px rgba(0,0,0,0.2), 0px 8px 16px -8px rgba(0,0,0,0.3) !important;
+  --shadow-lg: 0px 0px 0px 1px rgba(255,255,255,0.06), 0px 4px 8px rgba(0,0,0,0.2), 0px 16px 24px -8px rgba(0,0,0,0.4) !important;
+
+  --accent: #3b82f6 !important;
+  --accent-hover: #60a5fa !important;
+  --accent-light: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Light — manual override for system dark mode */
+html[data-theme="light"] {
+  --bg-primary: #ffffff !important;
+  --bg-secondary: #fafafa !important;
+  --bg-tertiary: #f5f5f5 !important;
+  --bg-card: #ffffff !important;
+  --bg-input: #ffffff !important;
+  --bg-hover: #f0f0f0 !important;
+  --bg-toolbar: #fafafa !important;
+
+  --text-primary: #171717 !important;
+  --text-secondary: #4d4d4d !important;
+  --text-tertiary: #808080 !important;
+  --text-placeholder: #a0a0a0 !important;
+  --text-inverse: #ffffff !important;
+
+  --border-color: rgba(0, 0, 0, 0.08) !important;
+  --border-color-strong: rgba(0, 0, 0, 0.12) !important;
+
+  --shadow-sm: 0px 0px 0px 1px rgba(0,0,0,0.08), 0px 1px 2px rgba(0,0,0,0.04) !important;
+  --shadow-md: 0px 0px 0px 1px rgba(0,0,0,0.08), 0px 2px 4px rgba(0,0,0,0.04), 0px 8px 16px -8px rgba(0,0,0,0.06) !important;
+  --shadow-lg: 0px 0px 0px 1px rgba(0,0,0,0.08), 0px 4px 8px rgba(0,0,0,0.04), 0px 16px 24px -8px rgba(0,0,0,0.08) !important;
+
+  --accent: #0072f5 !important;
+  --accent-hover: #005cc9 !important;
+  --accent-light: #ebf5ff !important;
+}
+
 /* ===== RESET ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 

@@ -2,6 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta property="og:title" content="Unit Converter — Free Online Unit Conversion Tool">
+<meta property="og:description" content="Real-time unit conversion across length, weight, temperature, area, and volume. Fully client-side, no data upload.">
+<meta name="twitter:title" content="Unit Converter — Free Online Unit Conversion Tool">
+<meta name="twitter:description" content="Real-time unit conversion across length, weight, temperature, area, and volume. Fully client-side, no data upload.">
+<meta name="description" content="Real-time unit conversion across length, weight, temperature, area, and volume. Fully client-side, no data upload.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hyrule Toolbox">
+<meta property="og:image" content="https://tools.zhczlx.com/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@zhczlx">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit Converter — Hyrule Toolbox</title>
 <link rel="stylesheet" href="css/tools.css">
@@ -42,6 +52,19 @@
 .quick-values button:hover { border-color:var(--accent); color:var(--accent); }
 @media (max-width:600px) { .panel-body { flex-direction:column; } .panel-body .swap-btn { margin-top:0; transform:rotate(90deg); } .panel-body .swap-btn:hover { transform:rotate(270deg); } }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Unit Converter",
+  "url": "https://tools.zhczlx.com/unit-converter.html",
+  "description": "Real-time unit conversion across length, weight, temperature, area, and volume. Fully client-side, no data upload.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "JavaScript enabled",
+  "offers": { "@type": "Offer", "price": "0" }
+}
+</script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -413,12 +436,13 @@
 
   var tt = $('themeToggle');
   var isDark = (function() { var s = localStorage.getItem('unit-theme'); return s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; })();
-  (function apply(d) {
+  function applyTheme(d) {
     isDark = d; document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light');
     tt.textContent = d ? '☀️' : '🌙';
     try { localStorage.setItem('unit-theme', d ? 'dark' : 'light'); } catch(e) {}
-  })(isDark);
-  tt.addEventListener('click', function() { apply(!isDark); });
+  }
+  applyTheme(isDark);
+  tt.addEventListener('click', function() { applyTheme(!isDark); });
 })();
 </script>
 </body>

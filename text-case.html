@@ -9,7 +9,7 @@
 <meta name="description" content="Convert text between UPPER, lower, Title, camelCase, snake_case, PascalCase, kebab-case, and more. One-click.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hyrule Toolbox">
-<meta property="og:image" content="https://tools.zhczlx.com/og-image.png">
+<meta property="og:image" content="https://tools.zhczlx.com/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@zhczlx">
 
@@ -327,6 +327,19 @@
             margin-right: auto;
         }
     </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Text Case Converter",
+  "url": "https://tools.zhczlx.com/text-case.html",
+  "description": "Convert text between UPPER, lower, Title, camelCase, snake_case, PascalCase, kebab-case, and more. One-click.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "JavaScript enabled",
+  "offers": { "@type": "Offer", "price": "0" }
+}
+</script>
 </head>
 <body>
 
@@ -1095,51 +1108,8 @@
     }
 
     function applyTheme(theme) {
-        if (theme === 'dark') {
-            document.documentElement.style.setProperty('--bg-primary', '#0a0a0b');
-            document.documentElement.style.setProperty('--bg-secondary', '#111113');
-            document.documentElement.style.setProperty('--bg-tertiary', '#18181b');
-            document.documentElement.style.setProperty('--bg-card', '#111113');
-            document.documentElement.style.setProperty('--bg-input', '#18181b');
-            document.documentElement.style.setProperty('--bg-hover', '#27272a');
-            document.documentElement.style.setProperty('--bg-toolbar', '#18181b');
-            document.documentElement.style.setProperty('--text-primary', '#fafafa');
-            document.documentElement.style.setProperty('--text-secondary', '#a1a1aa');
-            document.documentElement.style.setProperty('--text-tertiary', '#71717a');
-            document.documentElement.style.setProperty('--text-placeholder', '#52525b');
-            document.documentElement.style.setProperty('--text-inverse', '#0a0a0b');
-            document.documentElement.style.setProperty('--border-color', 'rgba(255,255,255,0.08)');
-            document.documentElement.style.setProperty('--border-color-strong', 'rgba(255,255,255,0.12)');
-            document.documentElement.style.setProperty('--shadow-sm', '0px 0px 0px 1px rgba(255,255,255,0.06), 0px 1px 2px rgba(0,0,0,0.2)');
-            document.documentElement.style.setProperty('--shadow-md', '0px 0px 0px 1px rgba(255,255,255,0.06), 0px 2px 4px rgba(0,0,0,0.2), 0px 8px 16px -8px rgba(0,0,0,0.3)');
-            document.documentElement.style.setProperty('--shadow-lg', '0px 0px 0px 1px rgba(255,255,255,0.06), 0px 4px 8px rgba(0,0,0,0.2), 0px 16px 24px -8px rgba(0,0,0,0.4)');
-            document.documentElement.style.setProperty('--accent', '#3b82f6');
-            document.documentElement.style.setProperty('--accent-hover', '#60a5fa');
-            document.documentElement.style.setProperty('--accent-light', 'rgba(59,130,246,0.1)');
-            themeToggle.textContent = '☀️';
-        } else {
-            document.documentElement.style.removeProperty('--bg-primary');
-            document.documentElement.style.removeProperty('--bg-secondary');
-            document.documentElement.style.removeProperty('--bg-tertiary');
-            document.documentElement.style.removeProperty('--bg-card');
-            document.documentElement.style.removeProperty('--bg-input');
-            document.documentElement.style.removeProperty('--bg-hover');
-            document.documentElement.style.removeProperty('--bg-toolbar');
-            document.documentElement.style.removeProperty('--text-primary');
-            document.documentElement.style.removeProperty('--text-secondary');
-            document.documentElement.style.removeProperty('--text-tertiary');
-            document.documentElement.style.removeProperty('--text-placeholder');
-            document.documentElement.style.removeProperty('--text-inverse');
-            document.documentElement.style.removeProperty('--border-color');
-            document.documentElement.style.removeProperty('--border-color-strong');
-            document.documentElement.style.removeProperty('--shadow-sm');
-            document.documentElement.style.removeProperty('--shadow-md');
-            document.documentElement.style.removeProperty('--shadow-lg');
-            document.documentElement.style.removeProperty('--accent');
-            document.documentElement.style.removeProperty('--accent-hover');
-            document.documentElement.style.removeProperty('--accent-light');
-            themeToggle.textContent = '🌙';
-        }
+        document.documentElement.setAttribute('data-theme', theme);
+        themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
         localStorage.setItem('theme', theme);
     }
 

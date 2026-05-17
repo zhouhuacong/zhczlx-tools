@@ -9,7 +9,7 @@
 <meta name="description" content="Generate UUIDs in v4, v1, and v7 formats. Batch generation, bulk copy, case toggle. Client-side using crypto.randomUUID().">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hyrule Toolbox">
-<meta property="og:image" content="https://tools.zhczlx.com/og-image.png">
+<meta property="og:image" content="https://tools.zhczlx.com/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@zhczlx">
 
@@ -368,6 +368,19 @@
             color: var(--accent);
         }
     </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "UUID Generator",
+  "url": "https://tools.zhczlx.com/uuid-generator.html",
+  "description": "Generate UUIDs in v4, v1, and v7 formats. Batch generation, bulk copy, case toggle. Client-side using crypto.randomUUID().",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "JavaScript enabled",
+  "offers": { "@type": "Offer", "price": "0" }
+}
+</script>
 </head>
 <body>
 
@@ -902,7 +915,7 @@
             themeToggle.textContent = '☀️';
             themeToggle.title = i18n[getLang()]?.toggleTheme || 'Toggle theme';
         } else {
-            document.documentElement.removeAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', 'light');
             themeToggle.textContent = '🌙';
             themeToggle.title = i18n[getLang()]?.toggleTheme || 'Toggle theme';
         }

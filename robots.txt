@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tools.zhczlx.com/sitemap.xml

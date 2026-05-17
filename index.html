@@ -9,7 +9,7 @@
 <meta name="description" content="Free online developer tools: JSON5 Formatter with auto-fix, Password Generator, Unit Converter, UUID Generator, Color Converter. All client-side, no data upload.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hyrule Toolbox">
-<meta property="og:image" content="https://tools.zhczlx.com/og-image.png">
+<meta property="og:image" content="https://tools.zhczlx.com/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@zhczlx">
 
@@ -234,6 +234,15 @@
       }
     }
   </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Hyrule Toolbox",
+  "url": "https://tools.zhczlx.com/",
+  "description": "Free online developer tools: JSON5 Formatter, Password Generator, Unit Converter, UUID Generator, Color Converter. All client-side, no data upload."
+}
+</script>
 </head>
 <body>
 
@@ -829,7 +838,7 @@
       themeToggle.textContent = '☀️';
     } else {
       htmlEl.style.colorScheme = 'light';
-      htmlEl.removeAttribute('data-theme');
+      htmlEl.setAttribute('data-theme', 'light');
       themeToggle.textContent = '🌓';
     }
   }

@@ -9,7 +9,7 @@
 <meta name="description" content="The most powerful JSON formatter online. Supports JSON5 (comments, trailing commas, single quotes). Auto-fix broken JSON. Visual tree view with fold/expand and copy subtree.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hyrule Toolbox">
-<meta property="og:image" content="https://tools.zhczlx.com/og-image.png">
+<meta property="og:image" content="https://tools.zhczlx.com/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@zhczlx">
 
@@ -154,6 +154,19 @@
   .json-layout { grid-template-columns: 1fr; }
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "JSON5 Formatter & Viewer",
+  "url": "https://tools.zhczlx.com/json-formatter.html",
+  "description": "Free online JSON formatter with JSON5 support. Auto-fix broken JSON, strip comments and trailing commas. Visual tree view with fold/expand.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "JavaScript enabled",
+  "offers": { "@type": "Offer", "price": "0" }
+}
+</script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -910,12 +923,13 @@
     var s = localStorage.getItem('json-theme');
     return s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
   })();
-  (function apply(d) {
+  function applyTheme(d) {
     isDark = d; document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light');
     tt.textContent = d ? '☀️' : '🌙';
     try { localStorage.setItem('json-theme', d ? 'dark' : 'light'); } catch(e) {}
-  })(isDark);
-  tt.addEventListener('click', function() { apply(!isDark); });
+  }
+  applyTheme(isDark);
+  tt.addEventListener('click', function() { applyTheme(!isDark); });
 })();
 </script>
 </body>
