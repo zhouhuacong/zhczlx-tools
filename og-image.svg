@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0b"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="80" y="200" width="1040" height="3" fill="url(#accent)" rx="1.5"/>
+  <text x="80" y="160" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800" fill="#fafafa" letter-spacing="-2">Hyrule Toolbox</text>
+  <text x="80" y="240" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="400" fill="#a1a1aa" letter-spacing="-0.5">Free Online Developer Tools</text>
+  <text x="80" y="320" font-family="JetBrains Mono, monospace" font-size="22" fill="#3b82f6">{ } JSON5 Formatter</text>
+  <text x="80" y="360" font-family="JetBrains Mono, monospace" font-size="22" fill="#10b981">🔐 Password Generator</text>
+  <text x="80" y="400" font-family="JetBrains Mono, monospace" font-size="22" fill="#f59e0b">📏 Unit Converter</text>
+  <text x="80" y="440" font-family="JetBrains Mono, monospace" font-size="22" fill="#8b5cf6">🎨 Color Converter</text>
+  <text x="80" y="510" font-family="Inter, Arial, sans-serif" font-size="18" fill="#71717a">tools.zhczlx.com</text>
+  <rect x="1030" y="90" width="100" height="100" rx="12" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.3"/>
+  <text x="1045" y="158" font-family="JetBrains Mono, monospace" font-size="48" fill="#3b82f6" opacity="0.6">{ }</text>
+</svg>

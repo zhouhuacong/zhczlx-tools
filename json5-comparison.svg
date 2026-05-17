@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="b" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0b"/>
+      <stop offset="100%" style="stop-color:#111113"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#b)"/>
+  <!-- Left: other tools fail -->
+  <rect x="40" y="80" width="520" height="360" rx="12" fill="#18181b" stroke="#ef4444" stroke-width="2" stroke-opacity="0.4"/>
+  <text x="60" y="120" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#ef4444">❌ Other JSON Tools</text>
+  <text x="60" y="170" font-family="JetBrains Mono, monospace" font-size="16" fill="#71717a">{</text>
+  <text x="60" y="200" font-family="JetBrains Mono, monospace" font-size="16" fill="#71717a">  "name": "Alice",</text>
+  <text x="60" y="230" font-family="JetBrains Mono, monospace" font-size="16" fill="#71717a">  "age": 28,</text>
+  <text x="60" y="260" font-family="JetBrains Mono, monospace" font-size="16" fill="#ef4444" text-decoration="line-through" text-decoration-color="#ef4444">  "tags": ["dev", "design",],  // trailing comma</text>
+  <text x="60" y="310" font-family="JetBrains Mono, monospace" font-size="16" fill="#ef4444">  ✕ Parse Error — trailing comma</text>
+  <text x="60" y="340" font-family="JetBrains Mono, monospace" font-size="14" fill="#71717a">  ✕ Doesn't handle comments</text>
+  <text x="60" y="370" font-family="JetBrains Mono, monospace" font-size="14" fill="#71717a">  ✕ Rejects single quotes</text>
+  <text x="60" y="400" font-family="JetBrains Mono, monospace" font-size="14" fill="#71717a">  ✕ No tree view</text>
+
+  <!-- Right: this tool works -->
+  <rect x="620" y="80" width="540" height="360" rx="12" fill="rgba(59,130,246,0.06)" stroke="#3b82f6" stroke-width="2"/>
+  <text x="640" y="120" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#10b981">✅ Hyrule JSON5 Formatter</text>
+  <text x="640" y="170" font-family="JetBrains Mono, monospace" font-size="16" fill="#ce9178">{</text>
+  <text x="640" y="200" font-family="JetBrains Mono, monospace" font-size="16" fill="#ce9178">  "name": <text fill="#ce9178">"Alice"</text>,</text>
+  <text x="640" y="230" font-family="JetBrains Mono, monospace" font-size="16" fill="#b5cea8">  "age": 28,</text>
+  <text x="640" y="260" font-family="JetBrains Mono, monospace" font-size="16" fill="#6e7781" font-style="italic">  // JSON5 comment here</text>
+  <text x="640" y="290" font-family="JetBrains Mono, monospace" font-size="16" fill="#ce9178">  "tags": ["dev", "design"<text fill="#b5cea8">,</text>]<text fill="#6e7781">,  // trailing comma OK</text></text>
+  <text x="640" y="340" font-family="JetBrains Mono, monospace" font-size="14" fill="#10b981">✅ Auto-fixes trailing commas</text>
+  <text x="640" y="370" font-family="JetBrains Mono, monospace" font-size="14" fill="#10b981">✅ Strips // and /* */ comments</text>
+  <text x="640" y="400" font-family="JetBrains Mono, monospace" font-size="14" fill="#10b981">✅ Accepts single quotes</text>
+  <text x="640" y="430" font-family="JetBrains Mono, monospace" font-size="14" fill="#10b981">✅ Tree view with copy subtree</text>
+
+  <!-- Bottom CTA -->
+  <rect x="200" y="520" width="800" height="80" rx="16" fill="url(#b)" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="600" y="565" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#fafafa" text-anchor="middle">The Only JSON5 Tool That Just Works</text>
+  <text x="600" y="600" font-family="Inter, Arial, sans-serif" font-size="16" fill="#3b82f6" text-anchor="middle">tools.zhczlx.com  •  Free  •  Client-Side  •  No Upload</text>
+
+  <!-- Tools strip -->
+  <rect x="40" y="660" width="1120" height="60" rx="10" fill="#18181b"/>
+  <text x="80" y="695" font-family="Inter, Arial, sans-serif" font-size="18" fill="#a1a1aa">🔐 Password</text>
+  <text x="260" y="695" font-family="Inter, Arial, sans-serif" font-size="18" fill="#a1a1aa">📏 Units</text>
+  <text x="420" y="695" font-family="Inter, Arial, sans-serif" font-size="18" fill="#a1a1aa">📊 Text</text>
+  <text x="570" y="695" font-family="Inter, Arial, sans-serif" font-size="18" fill="#a1a1aa">🆔 UUID</text>
+  <text x="720" y="695" font-family="Inter, Arial, sans-serif" font-size="18" fill="#a1a1aa">🎨 Color</text>
+  <text x="870" y="695" font-family="Inter, Arial, sans-serif" font-size="18" fill="#3b82f6" font-weight="600">{ } JSON5</text>
+</svg>
