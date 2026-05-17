@@ -1,0 +1,174 @@
+{
+  // ==========================================
+  // Hyrule Toolbox — Complex JSON5 Test Sample
+  // ==========================================
+  /* This file tests all JSON5 features:
+     - Single-line comments (double slash)
+     - Multi-line comments (slash star ... star slash)
+     - Trailing commas in objects and arrays
+     - Mixed data types
+     - Deep nesting */
+
+  "game": {
+    "title": "The Legend of Zelda: Breath of the Wild 2",  // fan name
+    "version": "1.0.0",
+    "developer": {
+      "name": "Nintendo EPD",  /* internal division */
+      "location": "Kyoto, Japan",
+      "employees": 732,
+    },
+    "releaseDate": "2023-05-12",
+    "platforms": ["Nintendo Switch", "Switch 2"],  // future-proof
+    "ratings": {
+      "IGN": 10,
+      "GameSpot": 10,
+      "Metacritic": 96,
+    },
+    "features": [
+      "Open World",
+      "Sky Islands",
+      "Vehicle Building",
+      "Ultrahand",  // key mechanic
+      "Fuse",
+      "Recall",
+      "Ascend",
+    ],
+  },
+
+  "player": {
+    "name": "Link",
+    "title": "Hero of Hyrule",
+    "stats": {
+      "hearts": 30,  /* max hearts */
+      "stamina": 3,  // in wheels
+      "rupees": 9999,
+    },
+    "inventory": {
+      "weapons": ["Master Sword", "Hylian Shield", "Bow of Light",],
+      "materials": [
+        {"name": "Silent Princess", "count": 42, "type": "flower",},
+        {"name": "Luminous Stone", "count": 99, "type": "mineral",},
+        {"name": "Star Fragment", "count": 7, "type": "rare",},  // rare drop
+      ],
+      "keyItems": [
+        "Paraglider",
+        "Purah Pad",
+        "Camera",  // for selfies
+        "Autobuild",
+      ],
+    },
+
+    // ===== Quests Section =====
+    "quests": [
+      {
+        "id": "Q001",
+        "title": "Destroy Ganon",
+        "status": "active",
+        "rewards": ["Peace",],
+      },
+      {
+        "id": "Q002",
+        "title": "Collect all Koroks",
+        "status": "in_progress",
+        "progress": 342,
+        "total": 1000,
+      },
+      {
+        "id": "Q003",
+        "title": "Upgrade all armor",
+        "status": "pending",
+        "prerequisites": ["Q001",],  // after main story
+      },
+    ],
+  },
+
+  /* ==========================================
+     WORLD DATA
+     ========================================== */
+  "world": {
+    "name": "Hyrule",
+    "regions": [
+      {
+        "name": "Central Hyrule",
+        "dangerLevel": "medium",
+        "hasTower": true,
+        "shrines": 15,  // all discovered
+      },
+      {
+        "name": "Gerudo Desert",
+        "dangerLevel": "high",
+        "hasTower": true,
+        "shrines": 10,
+        "note": "Watch out for heat",  /* and moldugas */
+      },
+      {
+        "name": "Hebra Mountains",
+        "dangerLevel": "high",
+        "hasTower": true,
+        "shrines": 8,
+        "coldResistance": "required",
+      },
+      {
+        "name": "Lost Woods",
+        "dangerLevel": "low",  // only if you get lost
+        "hasTower": false,
+        "shrines": 3,
+      },
+    ],
+
+    "coordinates": {
+      "center": {"x": 0.0, "y": 0, "z": 0,},
+      "maxBounds": {"x": 10000, "y": 8000, "z": 5000,},
+    },
+  },
+
+  "settings": {
+    "audio": {
+      "music": 80,
+      "sfx": 100,   // keep at max
+      "voice": 70,
+    },
+    "graphics": {
+      "resolution": "4K",  /* if supported */
+      "fps": 30,
+      "motionBlur": false,
+      "antiAliasing": true,
+    },
+    "controls": {
+      "sensitivity": 0.75,
+      "invertY": false,
+      "buttonMapping": {
+        "A": "jump",
+        "B": "run",
+        "X": "interact",
+        "Y": "attack",
+        "L": "parry",  // need precise timing
+        "R": "throw weapon",
+      },
+    },
+  },
+
+  "metadata": {
+    "schemaVersion": "2.1",
+    "exportedAt": "2026-05-18T10:30:00Z",
+    "exportedBy": "Hyrule Toolbox JSON Formatter",
+    "tags": ["sample", "json5", "test", "formatter",],
+    "isValid": true,
+    "totalItems": null,  // calculated later
+  },
+
+  // Nested empty structures (edge cases)
+  "emptyThings": {
+    "emptyArray": [],
+    "emptyObject": {},
+    "mixed": [
+      [],
+      {},
+      [1, 2],  /* not empty */
+      {"a": 1, "b": 2,},
+    ],
+  },
+
+  /* Null / Boolean edge cases */
+  "flags": [true, false, null, true, false, null, null,],  // all the things
+}

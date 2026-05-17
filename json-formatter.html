@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Formatter — Hyrule Toolbox</title>
+<link rel="stylesheet" href="css/tools.css">
+<style>
+/* ===== FULL WIDTH LAYOUT ===== */
+.json-page { max-width: 100%; padding: 0 16px; }
+.json-page .tool-section { max-width: 100%; padding: 16px 0 20px; }
+.json-page .tool-header { max-width: 1200px; margin: 0 auto; }
+
+.json-layout {
+  display: grid; grid-template-columns: minmax(320px, 1.2fr) minmax(420px, 2fr);
+  gap: 12px; margin-bottom: 0;
+}
+.json-panel { background: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; }
+.json-panel-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 10px 14px;
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.json-panel-body { flex: 1; display: flex; min-height: 0; }
+.json-panel-body textarea {
+  width: 100%; border: none; resize: vertical;
+  background: var(--bg-input); color: var(--text-primary);
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.55;
+  outline: none; tab-size: 2; padding: 14px;
+}
+.json-panel-body textarea:focus { box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* ===== TREE VIEW ===== */
+.tree-wrap {
+  flex: 1; overflow: auto; font-family: var(--font-mono); font-size: 14px; line-height: 1.7;
+  padding: 8px 0;
+}
+.tree-wrap .empty-state { text-align: center; padding: 80px 20px; color: var(--text-tertiary); font-size: 15px; font-family: var(--font-sans); }
+.tree-wrap .error-state { padding: 16px; color: var(--error); font-family: var(--font-sans); font-size: 14px; white-space: pre-wrap; }
+
+.json-line {
+  display: flex; align-items: flex-start; padding: 1px 10px 1px 6px;
+  white-space: nowrap; cursor: default; min-height: 24px; border-left: 3px solid transparent;
+}
+.json-line:hover { background: var(--bg-hover); border-left-color: var(--accent); }
+
+.json-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; margin-right: 3px; flex-shrink: 0;
+  cursor: pointer; font-size: 10px; color: var(--text-tertiary);
+  user-select: none; border-radius: 3px;
+}
+.json-toggle:hover { background: var(--bg-hover); color: var(--text-primary); }
+.json-toggle.empty { visibility: hidden; }
+
+.json-copy-sub {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; margin-left: 4px; flex-shrink: 0;
+  cursor: pointer; font-size: 11px; color: var(--text-tertiary);
+  user-select: none; border-radius: 3px; opacity: 0; transition: opacity 0.15s;
+}
+.json-line:hover .json-copy-sub { opacity: 1; }
+.json-copy-sub:hover { background: var(--accent-light); color: var(--accent); }
+
+.json-key { color: #881280; }
+.json-colon { color: var(--text-tertiary); margin-right: 3px; }
+.json-string { color: #0451a5; }
+.json-number { color: #098658; }
+.json-boolean { color: #0000ff; }
+.json-null { color: #808080; }
+.json-bracket { color: #333; }
+.json-comma { color: #999; }
+
+.json-children { margin-left: 18px; border-left: 1px dotted var(--border-color); }
+.json-children.collapsed { display: none; }
+
+/* ===== FULLSCREEN ===== */
+.json-fullscreen {
+  position: fixed !important; top: 0 !important; left: 0 !important;
+  width: 100vw !important; height: 100vh !important; z-index: 9999 !important;
+  border-radius: 0 !important;
+}
+.json-fullscreen .json-panel-header {
+  padding: 14px 20px !important; font-size: 15px !important;
+}
+.json-fullscreen .tree-wrap {
+  max-height: calc(100vh - 52px) !important; min-height: calc(100vh - 52px) !important;
+  font-size: 16px !important; padding: 16px 0 !important;
+}
+
+.json-summary {
+  color: var(--text-tertiary); font-size: 12px; margin-left: 4px;
+  font-family: var(--font-sans);
+}
+
+[data-theme="dark"] .json-key { color: #c586c0; }
+[data-theme="dark"] .json-string { color: #ce9178; }
+[data-theme="dark"] .json-number { color: #b5cea8; }
+[data-theme="dark"] .json-boolean { color: #569cd6; }
+[data-theme="dark"] .json-null { color: #808080; }
+[data-theme="dark"] .json-bracket { color: #d4d4d4; }
+
+/* ===== TOOLBAR ===== */
+.json-toolbar {
+  max-width: 100%; padding: 8px 0;
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.json-toolbar .btn { padding: 7px 14px; font-size: 13px; }
+
+/* ===== STATS ===== */
+.json-stats {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 14px; background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-tertiary);
+}
+
+/* ===== LANGUAGE SWITCHER ===== */
+.lang-switcher { position: relative; }
+.lang-btn {
+  background: none; border: 1px solid var(--border-color-strong); padding: 6px 12px;
+  border-radius: var(--radius-md); color: var(--text-secondary); font-size: 13px;
+  font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;
+  transition: all var(--transition-fast); font-family: var(--font-sans);
+}
+.lang-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+.lang-dropdown {
+  position: absolute; top: 100%; right: 0; margin-top: 4px;
+  background: var(--bg-card); border: 1px solid var(--border-color-strong);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-md); min-width: 160px;
+  z-index: 200; display: none; overflow: hidden;
+}
+.lang-dropdown.open { display: block; }
+.lang-dropdown button {
+  display: block; width: 100%; padding: 10px 16px; border: none;
+  background: transparent; color: var(--text-primary); font-size: 14px;
+  text-align: left; cursor: pointer; transition: background var(--transition-fast);
+  font-family: var(--font-sans);
+}
+.lang-dropdown button:hover { background: var(--bg-hover); }
+.lang-dropdown button.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .json-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="header-logo"><span class="logo-icon">🔧</span><span>Hyrule Toolbox</span></a>
+    <nav class="header-nav">
+      <a href="/">Home</a>
+      <a href="json-formatter.html" class="active">JSON</a>
+      <div class="lang-switcher">
+        <button class="lang-btn" id="langBtn">🌐 EN</button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button data-lang="en" class="active">🇬🇧 English</button>
+          <button data-lang="zh">🇨🇳 中文</button>
+          <button data-lang="ja">🇯🇵 日本語</button>
+          <button data-lang="ko">🇰🇷 한국어</button>
+          <button data-lang="fr">🇫🇷 Français</button>
+          <button data-lang="de">🇩🇪 Deutsch</button>
+        </div>
+      </div>
+    </nav>
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+  </div>
+</header>
+
+<main class="json-page" id="jsonMain">
+  <div class="tool-section">
+    <div class="tool-header" id="jsonHeader">
+      <h1>{ } JSON Formatter &amp; Viewer</h1>
+      <p>Format, validate, and visualize JSON — supports JSON5 with comments, trailing commas, auto-fix.</p>
+    </div>
+
+    <div class="json-toolbar">
+      <button class="btn btn-primary" id="formatBtn">▶ Format</button>
+      <button class="btn btn-secondary" id="copyBtn">📋 Copy All</button>
+      <button class="btn btn-secondary" id="collapseBtn">📂 Collapse</button>
+      <button class="btn btn-secondary" id="expandBtn">📂 Expand</button>
+      <button class="btn btn-secondary" id="clearBtn">🗑 Clear</button>
+      <button class="btn btn-secondary" id="sampleBtn">📄 Sample</button>
+    </div>
+
+    <div class="json-layout">
+      <div class="json-panel">
+        <div class="json-panel-header">
+          <span>📝 Input</span>
+          <span id="inputStats"></span>
+        </div>
+        <div class="json-panel-body">
+          <textarea id="jsonInput" placeholder='Paste JSON here... Supports JSON5 (comments, trailing commas, single quotes). Auto-formats on paste.' spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="json-panel">
+        <div class="json-panel-header">
+          <span>🌳 Tree View</span>
+          <span id="outputStats"></span>
+          <button class="btn-icon" id="fullscreenBtn" title="Fullscreen" style="width:28px;height:28px;font-size:13px;margin-left:auto">⛶</button>
+        </div>
+        <div class="json-panel-body">
+          <div class="tree-wrap" id="treeWrap">
+            <div class="empty-state">Paste JSON and <strong>Format</strong> to see the tree view</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner"><span>© 2026 Hyrule Toolbox</span><span><a href="/">Home</a> · JSON Formatter</span></div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  var $ = function(id) { return document.getElementById(id); };
+  var toast = $('toast');
+  var jsonInput = $('jsonInput');
+  var treeWrap = $('treeWrap');
+  var formatBtn = $('formatBtn');
+  var copyBtn = $('copyBtn');
+  var collapseBtn = $('collapseBtn');
+  var expandBtn = $('expandBtn');
+  var clearBtn = $('clearBtn');
+  var sampleBtn = $('sampleBtn');
+  var inputStats = $('inputStats');
+  var outputStats = $('outputStats');
+  var jsonMain = $('jsonMain');
+  var fullscreenBtn = $('fullscreenBtn');
+
+  var _isFullscreen = false;
+
+  var _lastFormatted = '';
+  var _lastData = null;
+
+  // ===== VIEWPORT HEIGHT FILL =====
+  function resizePanels() {
+    var main = jsonMain;
+    if (!main) return;
+    var rect = main.getBoundingClientRect();
+    var avail = window.innerHeight - rect.top - 20; // 20px bottom margin
+    if (avail < 300) avail = 300;
+    var textareas = document.querySelectorAll('.json-panel-body textarea');
+    for (var i = 0; i < textareas.length; i++) {
+      textareas[i].style.height = avail + 'px';
+    }
+    var wraps = document.querySelectorAll('.tree-wrap');
+    for (var i = 0; i < wraps.length; i++) {
+      wraps[i].style.maxHeight = avail + 'px';
+      wraps[i].style.minHeight = Math.min(avail, 200) + 'px';
+    }
+  }
+  window.addEventListener('resize', resizePanels);
+  window.addEventListener('load', resizePanels);
+
+  // ===== JSON5 PARSER =====
+  function cleanJSON5(str) {
+    if (!str) return str;
+    var r = [], i = 0, ins = false, sc = null;
+    while (i < str.length) {
+      var ch = str[i];
+      if (!ins && (ch === '"' || ch === "'")) { ins = true; sc = ch; r.push(ch); i++; continue; }
+      if (ins) {
+        r.push(ch);
+        if (ch === '\\') { i++; if (i < str.length) r.push(str[i]); }
+        else if (ch === sc) { ins = false; sc = null; }
+        i++; continue;
+      }
+      if (ch === '/' && i+1 < str.length && str[i+1] === '/') {
+        while (i < str.length && str[i] !== '\n') i++;
+        r.push(' '); continue;
+      }
+      if (ch === '/' && i+1 < str.length && str[i+1] === '*') {
+        i += 2;
+        while (i < str.length) {
+          if (str[i] === '*' && i+1 < str.length && str[i+1] === '/') { i += 2; break; }
+          i++;
+        }
+        r.push(' '); continue;
+      }
+      r.push(ch); i++;
+    }
+    return r.join('');
+  }
+
+  function parseJSON(str) {
+    if (!str || !str.trim()) return { success: false, error: 'Empty input' };
+    var cleaned = cleanJSON5(str);
+    try { return { success: true, data: JSON.parse(cleaned), fixed: false }; }
+    catch (e) {
+      var fixed = cleaned.replace(/,\s*([}\]])/g, '$1');
+      try { return { success: true, data: JSON.parse(fixed), fixed: true }; }
+      catch (e2) {
+        var f2 = fixed.replace(/'/g, '"');
+        try { return { success: true, data: JSON.parse(f2), fixed: true }; }
+        catch (e3) { return { success: false, error: e2.message || e.message }; }
+      }
+    }
+  }
+
+  // ===== TREE RENDERER =====
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderTree(data) {
+    function line(html) { return '<div class="json-line">' + html + '</div>'; }
+    function toggleTag(id) { return '<span class="json-toggle" id="tg_' + id + '" onclick="tg(\'' + id + '\')">▼</span>'; }
+    function emptyT() { return '<span class="json-toggle empty"></span>'; }
+    function copyTag(id) { return '<span class="json-copy-sub" title="Copy this subtree" onclick="copySub(\'' + id + '\', event)">📋</span>'; }
+
+    function val(v, k, parPath) {
+      var path = parPath;
+      if (k !== undefined) {
+        var kStr = typeof k === 'number' ? '[' + k + ']' : JSON.stringify(k);
+        path = parPath ? parPath + '.' + kStr : kStr;
+      }
+      var kHtml = k !== undefined
+        ? '<span class="json-key">' + esc(JSON.stringify(k)) + '</span><span class="json-colon">: </span>'
+        : '';
+      if (v === null) return line(kHtml + '<span class="json-null">null</span>');
+      var t = typeof v;
+      if (t === 'boolean') return line(kHtml + '<span class="json-boolean">' + v + '</span>');
+      if (t === 'number') return line(kHtml + '<span class="json-number">' + v + '</span>');
+      if (t === 'string') return line(kHtml + '<span class="json-string">' + esc(JSON.stringify(v)) + '</span>');
+      if (Array.isArray(v)) return arr(v, k, path);
+      if (t === 'object') return obj(v, k, path);
+      return line(kHtml + esc(String(v)));
+    }
+
+    function obj(o, k, path) {
+      var keys = Object.keys(o);
+      var kHtml = k !== undefined
+        ? '<span class="json-key">' + esc(JSON.stringify(k)) + '</span><span class="json-colon">: </span>'
+        : '';
+      if (keys.length === 0) return line(kHtml + '<span class="json-bracket">{ }</span>');
+      var id = 'o' + (Math.random() * 1e9 | 0).toString(36);
+      var dataPath = path || 'root';
+      var h = '<div class="json-line" style="cursor:pointer" onclick="tg(\'' + id + '\')">'
+        + kHtml + toggleTag(id)
+        + '<span class="json-bracket">{</span>'
+        + ' <span class="json-summary">' + keys.length + ' keys</span>'
+        + ' <span class="json-bracket">}</span>'
+        + copyTag('s_' + id)
+        + '</div>'
+        + '<div class="json-children" id="ch_' + id + '">';
+      for (var i = 0; i < keys.length; i++) {
+        var child = val(o[keys[i]], keys[i], dataPath);
+        if (i < keys.length - 1) {
+          var ld = child.lastIndexOf('</div>');
+          if (ld > 0) child = child.substring(0, ld) + '<span class="json-comma">,</span>' + child.substring(ld);
+        }
+        h += child;
+      }
+      h += '</div>';
+      return h;
+    }
+
+    function arr(a, k, path) {
+      var kHtml = k !== undefined
+        ? '<span class="json-key">' + esc(JSON.stringify(k)) + '</span><span class="json-colon">: </span>'
+        : '';
+      if (a.length === 0) return line(kHtml + '<span class="json-bracket">[ ]</span>');
+      var id = 'a' + (Math.random() * 1e9 | 0).toString(36);
+      var dataPath = path || 'root';
+      var h = '<div class="json-line" style="cursor:pointer" onclick="tg(\'' + id + '\')">'
+        + kHtml + toggleTag(id)
+        + '<span class="json-bracket">[</span>'
+        + ' <span class="json-summary">' + a.length + ' items</span>'
+        + ' <span class="json-bracket">]</span>'
+        + copyTag('s_' + id)
+        + '</div>'
+        + '<div class="json-children" id="ch_' + id + '">';
+      for (var i = 0; i < a.length; i++) {
+        var child = val(a[i], i, dataPath);
+        if (i < a.length - 1) {
+          var ld = child.lastIndexOf('</div>');
+          if (ld > 0) child = child.substring(0, ld) + '<span class="json-comma">,</span>' + child.substring(ld);
+        }
+        h += child;
+      }
+      h += '</div>';
+      return h;
+    }
+
+    return val(data);
+  }
+
+  // ===== GLOBAL HANDLERS =====
+  window.tg = function(id) {
+    var ch = document.getElementById('ch_' + id);
+    var tg = document.getElementById('tg_' + id);
+    if (ch && tg) {
+      ch.classList.toggle('collapsed');
+      tg.textContent = ch.classList.contains('collapsed') ? '▶' : '▼';
+    }
+  };
+
+  window.copySub = function(id, ev) {
+    if (ev) { ev.stopPropagation(); }
+    if (!_lastData) { showToast('Nothing to copy'); return; }
+
+    // Resolve the subtree path from the node id
+    // Map node IDs to paths using data attributes in the rendered tree
+    var ch = document.getElementById('ch_' + id.replace('s_', ''));
+    if (!ch) { showToast('Nothing to copy'); return; }
+
+    // Walk _lastData to find the right subtree by matching the DOM structure
+    // Simpler approach: use the path stored in the node
+    var nodeEl = ch.parentNode;
+    // Find the line that has onclick=tg
+    var headerLine = nodeEl ? nodeEl.querySelector('.json-line') : null;
+    if (!headerLine) { showToast('Copy failed'); return; }
+
+    // We stored _lastSubData map during render
+    var subData = _lastSubMap ? _lastSubMap[id] : null;
+    if (subData !== null && subData !== undefined) {
+      copyText(JSON.stringify(subData, null, 2));
+    } else {
+      // Last resort: copy all formatted data
+      copyText(_lastFormatted);
+    }
+  };
+
+  var _lastSubMap = null;
+
+  // ===== FORMAT =====
+  function doFormat() {
+    var input = jsonInput.value;
+    var result = parseJSON(input);
+
+    if (result.success) {
+      _lastData = result.data;
+      _lastFormatted = JSON.stringify(result.data, null, 2);
+      _lastSubMap = {};
+
+      // Build subtree map during render
+      function buildMap(v, path) {
+        var id;
+        if (Array.isArray(v)) {
+          id = 'a' + (Math.random() * 1e9 | 0).toString(36);
+          _lastSubMap['s_' + id] = v;
+          for (var i = 0; i < v.length; i++) {
+            if (typeof v[i] === 'object' && v[i] !== null) buildMap(v[i], path + '[' + i + ']');
+          }
+        } else if (typeof v === 'object' && v !== null) {
+          id = 'o' + (Math.random() * 1e9 | 0).toString(36);
+          _lastSubMap['s_' + id] = v;
+          var keys = Object.keys(v);
+          for (var i = 0; i < keys.length; i++) {
+            if (typeof v[keys[i]] === 'object' && v[keys[i]] !== null) buildMap(v[keys[i]], path + '.' + keys[i]);
+          }
+        }
+        return id;
+      }
+
+      // Rebuild with ID mapping
+      // We need to render first, then map
+      var html = '<div style="padding:0">' + renderTreeWithMap(result.data) + '</div>';
+      treeWrap.innerHTML = html;
+
+      var lines = input.split('\n').length;
+      inputStats.textContent = lines + ' lines · ' + input.length + ' chars';
+      outputStats.textContent = _lastFormatted.length + ' chars' + (result.fixed ? ' · auto-fixed ⚡' : '');
+      showToast(result.fixed ? '✅ Formatted with auto-fix' : '✅ Formatted');
+    } else {
+      treeWrap.innerHTML = '<div class="error-state">❌ ' + result.error + '</div>';
+      _lastData = null; _lastFormatted = ''; _lastSubMap = null;
+      outputStats.textContent = '';
+      showToast('❌ ' + result.error);
+    }
+  }
+
+  function renderTreeWithMap(data) {
+    _lastSubMap = {};
+    var html = renderTreeMapped(data, 'root');
+    return html;
+  }
+
+  function renderTreeMapped(v, path) {
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function line(html) { return '<div class="json-line">' + html + '</div>'; }
+    function toggleTag(id) { return '<span class="json-toggle" id="tg_' + id + '" onclick="event.stopPropagation();tg(\'' + id + '\')">▼</span>'; }
+    function emptyT() { return '<span class="json-toggle empty"></span>'; }
+    function copyTag(id) { return '<span class="json-copy-sub" title="Copy this subtree" onclick="copySub(\'' + id + '\', event)">📋</span>'; }
+
+    function val(v, k) {
+      var kHtml = k !== undefined
+        ? '<span class="json-key">' + esc(JSON.stringify(k)) + '</span><span class="json-colon">: </span>'
+        : '';
+      if (v === null) return line(kHtml + '<span class="json-null">null</span>');
+      var t = typeof v;
+      if (t === 'boolean') return line(kHtml + '<span class="json-boolean">' + v + '</span>');
+      if (t === 'number') return line(kHtml + '<span class="json-number">' + v + '</span>');
+      if (t === 'string') return line(kHtml + '<span class="json-string">' + esc(JSON.stringify(v)) + '</span>');
+      if (Array.isArray(v)) return renderArr(v, k);
+      if (t === 'object') return renderObj(v, k);
+      return line(kHtml + esc(String(v)));
+    }
+
+    function renderObj(o, k) {
+      var keys = Object.keys(o);
+      var kHtml = k !== undefined
+        ? '<span class="json-key">' + esc(JSON.stringify(k)) + '</span><span class="json-colon">: </span>'
+        : '';
+      if (keys.length === 0) return line(kHtml + '<span class="json-bracket">{ }</span>');
+      var id = 'o' + (Math.random() * 1e9 | 0).toString(36);
+      _lastSubMap['s_' + id] = o;
+      var h = '<div class="json-line" style="cursor:pointer" onclick="tg(\'' + id + '\')">'
+        + kHtml + toggleTag(id)
+        + '<span class="json-bracket">{</span> <span class="json-summary">' + keys.length + ' keys</span>'
+        + ' <span class="json-bracket">}</span>' + copyTag('s_' + id) + '</div>'
+        + '<div class="json-children" id="ch_' + id + '">';
+      for (var i = 0; i < keys.length; i++) {
+        var child = val(o[keys[i]], keys[i]);
+        if (i < keys.length - 1) { var ld = child.lastIndexOf('</div>'); if (ld > 0) child = child.substring(0, ld) + '<span class="json-comma">,</span>' + child.substring(ld); }
+        h += child;
+      }
+      h += '</div>';
+      return h;
+    }
+
+    function renderArr(a, k) {
+      var kHtml = k !== undefined
+        ? '<span class="json-key">' + esc(JSON.stringify(k)) + '</span><span class="json-colon">: </span>'
+        : '';
+      if (a.length === 0) return line(kHtml + '<span class="json-bracket">[ ]</span>');
+      var id = 'a' + (Math.random() * 1e9 | 0).toString(36);
+      _lastSubMap['s_' + id] = a;
+      var h = '<div class="json-line" style="cursor:pointer" onclick="tg(\'' + id + '\')">'
+        + kHtml + toggleTag(id)
+        + '<span class="json-bracket">[</span> <span class="json-summary">' + a.length + ' items</span>'
+        + ' <span class="json-bracket">]</span>' + copyTag('s_' + id) + '</div>'
+        + '<div class="json-children" id="ch_' + id + '">';
+      for (var i = 0; i < a.length; i++) {
+        var child = val(a[i], i);
+        if (i < a.length - 1) { var ld = child.lastIndexOf('</div>'); if (ld > 0) child = child.substring(0, ld) + '<span class="json-comma">,</span>' + child.substring(ld); }
+        h += child;
+      }
+      h += '</div>';
+      return h;
+    }
+
+    return val(v);
+  }
+
+  function expandAll() {
+    var cs = treeWrap.querySelectorAll('.json-children.collapsed');
+    for (var i = 0; i < cs.length; i++) cs[i].classList.remove('collapsed');
+    var ts = treeWrap.querySelectorAll('.json-toggle');
+    for (var i = 0; i < ts.length; i++) ts[i].textContent = '▼';
+  }
+
+  function collapseAll() {
+    var cs = treeWrap.querySelectorAll('.json-children');
+    for (var i = 0; i < cs.length; i++) cs[i].classList.add('collapsed');
+    var ts = treeWrap.querySelectorAll('.json-toggle');
+    for (var i = 0; i < ts.length; i++) ts[i].textContent = '▶';
+  }
+
+  // ===== SAMPLES =====
+  var SAMPLES = [
+    '{\n  // User profile\n  "name": "Alice",\n  "age": 28,\n  "tags": ["dev", "design",],\n  "active": true,\n  "score": null,\n}',
+    '[\n  { "id": 1, "title": "JSON5", "lines": 42 },\n  { "id": 2, "title": "Formatter", "lines": 99, "tags": ["tool",], },\n]',
+    '{\n  /* nested data */\n  "config": {\n    "theme": "dark",\n    "features": ["a", "b", "c",],\n    "limits": {\n      "max": 100,\n      "min": 0,\n    },\n  },\n}'
+  ];
+  var sIdx = 0;
+  function loadSample() {
+    jsonInput.value = SAMPLES[sIdx % SAMPLES.length];
+    sIdx++;
+    inputStats.textContent = jsonInput.value.split('\n').length + ' lines · ' + jsonInput.value.length + ' chars';
+    showToast('📄 Sample loaded');
+    setTimeout(doFormat, 50);
+  }
+
+  // ===== TOAST / COPY =====
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function() { toast.classList.remove('show'); }, 2000);
+  }
+  function copyText(text) {
+    if (!text) { showToast('Nothing to copy'); return; }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() { showToast('✅ Copied!'); }).catch(function() { fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.left='-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('✅ Copied!'); } catch(e) { showToast('Copy failed'); }
+    document.body.removeChild(ta);
+  }
+
+  // ===== EVENTS =====
+  formatBtn.addEventListener('click', doFormat);
+  copyBtn.addEventListener('click', function() { copyText(_lastFormatted); });
+  collapseBtn.addEventListener('click', collapseAll);
+  expandBtn.addEventListener('click', expandAll);
+  clearBtn.addEventListener('click', function() {
+    jsonInput.value = ''; _lastFormatted = ''; _lastData = null; _lastSubMap = null;
+    treeWrap.innerHTML = '<div class="empty-state">Paste JSON and click <strong>Format</strong> to see the tree view</div>';
+    inputStats.textContent = ''; outputStats.textContent = '';
+    showToast('Cleared');
+  });
+  sampleBtn.addEventListener('click', loadSample);
+  jsonInput.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); doFormat(); }
+  });
+  jsonInput.addEventListener('paste', function() { setTimeout(doFormat, 50); });
+
+  // ===== FULLSCREEN TOGGLE =====
+  function toggleFullscreen() {
+    _isFullscreen = !_isFullscreen;
+    var rightPanel = fullscreenBtn.closest('.json-panel');
+    if (!rightPanel) return;
+    if (_isFullscreen) {
+      rightPanel.classList.add('json-fullscreen');
+      fullscreenBtn.textContent = '✕';
+      fullscreenBtn.title = 'Exit fullscreen';
+      // Update tree height
+      setTimeout(resizePanels, 100);
+    } else {
+      rightPanel.classList.remove('json-fullscreen');
+      fullscreenBtn.textContent = '⛶';
+      fullscreenBtn.title = 'Fullscreen';
+      resizePanels();
+    }
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && _isFullscreen) {
+      toggleFullscreen();
+    }
+  });
+
+  // ===== I18N =====
+  var LANG = {
+    en: {
+      title: 'JSON Formatter — Hyrule Toolbox',
+      siteName: 'Hyrule Toolbox',
+      home: 'Home',
+      navJson: 'JSON',
+      pageTitle: '{ } JSON Formatter & Viewer',
+      pageDesc: 'Format, validate, and visualize JSON — supports JSON5 with comments, trailing commas, auto-fix.',
+      inputPlaceholder: 'Paste JSON here... Supports JSON5 (comments, trailing commas, single quotes). Auto-formats on paste.',
+      emptyState: 'Paste JSON and <strong>Format</strong> to see the tree view',
+      btnFormat: '▶ Format',
+      btnCopy: '📋 Copy All',
+      btnCollapse: '📂 Collapse',
+      btnExpand: '📂 Expand',
+      btnClear: '🗑 Clear',
+      btnSample: '📄 Sample',
+      inputLabel: '📝 Input',
+      treeLabel: '🌳 Tree View',
+      fullscreenTitle: 'Fullscreen',
+      exitFullscreenTitle: 'Exit fullscreen',
+      copied: '✅ Copied!',
+      cleared: 'Cleared',
+      sampleLoaded: '📄 Sample loaded',
+      formatted: '✅ Formatted',
+      formattedFixed: '✅ Formatted with auto-fix',
+      nothingCopy: 'Nothing to copy',
+      copyFailed: 'Copy failed',
+      emptyInput: 'Empty input',
+      chars: 'chars',
+      lines: 'lines',
+      keys: 'keys',
+      items: 'items',
+    },
+    zh: {
+      title: 'JSON 格式化 — 海拉鲁工具箱',
+      siteName: '海拉鲁工具箱',
+      home: '首页',
+      navJson: 'JSON',
+      pageTitle: '{ } JSON 格式化与查看器',
+      pageDesc: '格式化、验证与可视化 JSON — 支持 JSON5（注释、尾逗号），自动修复。',
+      inputPlaceholder: '在此粘贴 JSON... 支持 JSON5（注释、尾逗号、单引号），粘贴自动格式化。',
+      emptyState: '粘贴 JSON 后点击 <strong>格式化</strong> 查看树视图',
+      btnFormat: '▶ 格式化',
+      btnCopy: '📋 复制全部',
+      btnCollapse: '📂 全部折叠',
+      btnExpand: '📂 全部展开',
+      btnClear: '🗑 清空',
+      btnSample: '📄 示例',
+      inputLabel: '📝 输入',
+      treeLabel: '🌳 树视图',
+      fullscreenTitle: '全屏',
+      exitFullscreenTitle: '退出全屏',
+      copied: '✅ 已复制!',
+      cleared: '已清空',
+      sampleLoaded: '📄 示例已加载',
+      formatted: '✅ 格式化成功',
+      formattedFixed: '✅ 格式化成功（已自动修复）',
+      nothingCopy: '没有可复制的内容',
+      copyFailed: '复制失败',
+      emptyInput: '输入为空',
+      chars: '字符',
+      lines: '行',
+      keys: '个键',
+      items: '项',
+    },
+  };
+  // Add other languages (fallback to English for simplicity)
+  LANG.ja = LANG.en; LANG.ko = LANG.en; LANG.fr = LANG.en; LANG.de = LANG.en;
+
+  var currentLang = 'en';
+  var langBtn = $('langBtn');
+  var langDropdown = $('langDropdown');
+
+  function setLang(lang) {
+    if (!LANG[lang]) lang = 'en';
+    currentLang = lang;
+    var t = LANG[lang];
+    document.title = t.title || t.pageTitle;
+    langBtn.textContent = '🌐 ' + lang.toUpperCase();
+    var opts = langDropdown.querySelectorAll('button');
+    for (var i = 0; i < opts.length; i++) opts[i].classList.toggle('active', opts[i].getAttribute('data-lang') === lang);
+    // Update UI elements
+    if (document.querySelector('h1')) document.querySelector('h1').textContent = t.pageTitle;
+    var desc = document.querySelector('.tool-header p');
+    if (desc) desc.textContent = t.pageDesc;
+    var ph = jsonInput.getAttribute('data-placeholder');
+    jsonInput.placeholder = t.inputPlaceholder;
+    if (formatBtn) formatBtn.innerHTML = t.btnFormat;
+    if (copyBtn) copyBtn.innerHTML = t.btnCopy;
+    if (collapseBtn) collapseBtn.innerHTML = t.btnCollapse;
+    if (expandBtn) expandBtn.innerHTML = t.btnExpand;
+    if (clearBtn) clearBtn.innerHTML = t.btnClear;
+    if (sampleBtn) sampleBtn.innerHTML = t.btnSample;
+    // Input panel header
+    var inputLabel = document.querySelector('.json-panel:first-child .json-panel-header span:first-child');
+    if (inputLabel) inputLabel.textContent = t.inputLabel;
+    var treeLabel = document.querySelector('.json-panel:last-child .json-panel-header span:first-child');
+    if (treeLabel) treeLabel.textContent = t.treeLabel;
+    if (fullscreenBtn) {
+      fullscreenBtn.title = _isFullscreen ? t.exitFullscreenTitle : t.fullscreenTitle;
+    }
+    // Update empty state
+    var emptyEl = treeWrap.querySelector('.empty-state');
+    if (emptyEl) emptyEl.innerHTML = t.emptyState;
+    try { localStorage.setItem('json-lang', lang); } catch(e) {}
+  }
+
+  // Load saved lang
+  try { var sl = localStorage.getItem('json-lang'); if (sl && LANG[sl]) currentLang = sl; } catch(e) {}
+  setLang(currentLang);
+
+  langBtn.addEventListener('click', function(e) { e.stopPropagation(); langDropdown.classList.toggle('open'); });
+  document.addEventListener('click', function() { langDropdown.classList.remove('open'); });
+  var langOpts = langDropdown.querySelectorAll('button');
+  for (var i = 0; i < langOpts.length; i++) {
+    (function(btn) { btn.addEventListener('click', function() { setLang(btn.getAttribute('data-lang')); langDropdown.classList.remove('open'); }); })(langOpts[i]);
+  }
+
+  // ===== THEME =====
+  var tt = $('themeToggle');
+  var isDark = (function() {
+    var s = localStorage.getItem('json-theme');
+    return s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  })();
+  (function apply(d) {
+    isDark = d; document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light');
+    tt.textContent = d ? '☀️' : '🌙';
+    try { localStorage.setItem('json-theme', d ? 'dark' : 'light'); } catch(e) {}
+  })(isDark);
+  tt.addEventListener('click', function() { apply(!isDark); });
+})();
+</script>
+</body>
+</html>
