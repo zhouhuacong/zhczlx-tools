@@ -392,7 +392,7 @@
                             <input type="color" id="colorPicker" value="#3b82f6">
                         </div>
                         <div class="cc-text-wrap">
-                            <input type="text" id="colorInput" placeholder="#3b82f6 or rgb(59,130,246) or hsl(217,91%,60%)" spellcheck="false" autocomplete="off" data-i18n-placeholder="inputPlaceholder">
+                            <input type="text" id="colorInput" placeholder="#3b82f6 / rgb(59,130,246) / hsl(217,91%,60%) / red / 255,0,0" spellcheck="false" autocomplete="off" data-i18n-placeholder="inputPlaceholder">
                             <span class="cc-format-hint" data-i18n="formatHint">Supports HEX (#RRGGBB), rgb(), hsl() and more — converts automatically as you type</span>
                         </div>
                     </div>
@@ -862,23 +862,69 @@
 
     // ===== PARSING =====
 
+    // ===== CSS NAMED COLORS =====
+    var NAMED_COLORS = {
+        'red': '#ff0000', 'crimson': '#dc143c', 'firebrick': '#b22222',
+        'darkred': '#8b0000', 'pink': '#ffc0cb', 'lightpink': '#ffb6c1',
+        'hotpink': '#ff69b4', 'deeppink': '#ff1493', 'palevioletred': '#db7093',
+        'orange': '#ffa500', 'darkorange': '#ff8c00', 'coral': '#ff7f50',
+        'tomato': '#ff6347', 'orangered': '#ff4500', 'gold': '#ffd700',
+        'yellow': '#ffff00', 'lightyellow': '#ffffe0', 'lemonchiffon': '#fffacd',
+        'green': '#008000', 'lime': '#00ff00', 'limegreen': '#32cd32',
+        'forestgreen': '#228b22', 'seagreen': '#2e8b57', 'darkgreen': '#006400',
+        'olive': '#808000', 'olivedrab': '#6b8e23', 'yellowgreen': '#9acd32',
+        'springgreen': '#00ff7f', 'mediumspringgreen': '#00fa9a',
+        'blue': '#0000ff', 'royalblue': '#4169e1', 'dodgerblue': '#1e90ff',
+        'deepskyblue': '#00bfff', 'skyblue': '#87ceeb', 'lightskyblue': '#87cefa',
+        'steelblue': '#4682b4', 'cornflowerblue': '#6495ed', 'mediumblue': '#0000cd',
+        'darkblue': '#00008b', 'navy': '#000080', 'indigo': '#4b0082',
+        'purple': '#800080', 'darkviolet': '#9400d3', 'blueviolet': '#8a2be2',
+        'mediumpurple': '#9370db', 'plum': '#dda0dd', 'violet': '#ee82ee',
+        'magenta': '#ff00ff', 'fuchsia': '#ff00ff', 'orchid': '#da70d6',
+        'cyan': '#00ffff', 'aqua': '#00ffff', 'turquoise': '#40e0d0',
+        'teal': '#008080', 'aquamarine': '#7fffd4', 'mediumturquoise': '#48d1cc',
+        'brown': '#a52a2a', 'maroon': '#800000', 'saddlebrown': '#8b4513',
+        'sienna': '#a0522d', 'chocolate': '#d2691e', 'peru': '#cd853f',
+        'tan': '#d2b48c', 'wheat': '#f5deb3', 'burlywood': '#deb887',
+        'white': '#ffffff', 'snow': '#fffafa', 'ghostwhite': '#f8f8ff',
+        'whitesmoke': '#f5f5f5', 'gainsboro': '#dcdcdc', 'lightgray': '#d3d3d3',
+        'silver': '#c0c0c0', 'darkgray': '#a9a9a9', 'gray': '#808080',
+        'dimgray': '#696969', 'lightslategray': '#778899', 'slategray': '#708090',
+        'darkslategray': '#2f4f4f', 'black': '#000000',
+        'transparent': '#00000000'
+    };
+
     function parseColorString(str) {
         str = str.trim();
 
-        // HEX (#RGB, #RRGGBB)
-        var hexMatch = str.match(/^#?([a-f\\d]{3}|[a-f\\d]{6})$/i);
-        if (hexMatch) {
-            var hex = hexMatch[1];
-            if (hex.length === 3) {
-                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-            }
-            var rgb = hexToRgb(hex);
-            if (rgb) return rgb;
+        // 1) Named colors
+        var lower = str.toLowerCase();
+        if (NAMED_COLORS[lower]) {
+            var hexName = NAMED_COLORS[lower];
+            // transparent → return black (alpha not supported in this parser)
+            return hexToRgb(hexName.replace('#', ''));
         }
 
-        // rgb() / rgba()
+        // 2) HEX: #RGB, #RRGGBB, #RGBA, #RRGGBBAA, with or without #
+        var hexRaw = str.replace(/^#/, '');
+        if (/^[0-9a-f]{3,8}$/i.test(hexRaw)) {
+            if (hexRaw.length === 3) {
+                hexRaw = hexRaw[0]+hexRaw[0]+hexRaw[1]+hexRaw[1]+hexRaw[2]+hexRaw[2];
+            } else if (hexRaw.length === 4) {
+                hexRaw = hexRaw[0]+hexRaw[0]+hexRaw[1]+hexRaw[1]+hexRaw[2]+hexRaw[2]+hexRaw[3]+hexRaw[3];
+            } else if (hexRaw.length === 8) {
+                // RRGGBBAA — drop alpha for now
+                hexRaw = hexRaw.substring(0, 6);
+            }
+            if (hexRaw.length === 6) {
+                var rgb = hexToRgb(hexRaw);
+                if (rgb) return rgb;
+            }
+        }
+
+        // 3) rgb() / rgba() — both comma and space-separated (CSS Color Level 4)
         var rgbMatch = str.match(
-            /^rgba?\\s*\\(\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})(?:\\s*,\\s*[\\d.]+)?\\s*\\)$/i
+            /^rgba?\s*\(\s*(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})(?:\s*[\/,]\s*[\d.]+%?\s*)?\)$/i
         );
         if (rgbMatch) {
             return {
@@ -888,15 +934,45 @@
             };
         }
 
-        // hsl() / hsla()
+        // 4) hsl() / hsla() — both comma and space-separated
         var hslMatch = str.match(
-            /^hsla?\\s*\\(\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})%\\s*,\\s*(\\d{1,3})%(?:\\s*,\\s*[\\d.]+)?\\s*\\)$/i
+            /^hsla?\s*\(\s*(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})%?\s*(?:,\s*|\s+)(\d{1,3})%?(?:\s*[\/,]\s*[\d.]+%?\s*)?\)$/i
         );
         if (hslMatch) {
             var h = clamp(parseInt(hslMatch[1], 10), 0, 360);
             var s = clamp(parseInt(hslMatch[2], 10), 0, 100);
             var l = clamp(parseInt(hslMatch[3], 10), 0, 100);
             return hslToRgb(h, s, l);
+        }
+
+        // 5) Raw CSS functional: rgb(r g b), hsl(h s% l%)
+        var rawRgb = str.match(/^(\d{1,3})\s+(\d{1,3})\s+(\d{1,3})$/);
+        if (rawRgb) {
+            return {
+                r: clamp(parseInt(rawRgb[1], 10), 0, 255),
+                g: clamp(parseInt(rawRgb[2], 10), 0, 255),
+                b: clamp(parseInt(rawRgb[3], 10), 0, 255)
+            };
+        }
+
+        // 6) Comma-separated raw: 255,0,0 or 255, 0, 0
+        var csvRgb = str.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+        if (csvRgb) {
+            return {
+                r: clamp(parseInt(csvRgb[1], 10), 0, 255),
+                g: clamp(parseInt(csvRgb[2], 10), 0, 255),
+                b: clamp(parseInt(csvRgb[3], 10), 0, 255)
+            };
+        }
+
+        // 7) Space-separated with % (e.g. "50% 50% 50%")
+        var pctRgb = str.match(/^(\d{1,3})%\s+(\d{1,3})%\s+(\d{1,3})%$/);
+        if (pctRgb) {
+            return {
+                r: Math.round(clamp(parseInt(pctRgb[1], 10), 0, 100) * 2.55),
+                g: Math.round(clamp(parseInt(pctRgb[2], 10), 0, 100) * 2.55),
+                b: Math.round(clamp(parseInt(pctRgb[3], 10), 0, 100) * 2.55)
+            };
         }
 
         return null;
