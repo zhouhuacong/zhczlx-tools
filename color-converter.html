@@ -945,7 +945,23 @@
             return hslToRgb(h, s, l);
         }
 
-        // 5) Raw CSS functional: rgb(r g b), hsl(h s% l%)
+        // 5) CMYK: cmyk(c%, m%, y%, k%)
+        var cmykMatch = str.match(
+            /^cmyk\s*\(\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/i
+        );
+        if (cmykMatch) {
+            var c = clamp(parseInt(cmykMatch[1], 10), 0, 100) / 100;
+            var m = clamp(parseInt(cmykMatch[2], 10), 0, 100) / 100;
+            var y = clamp(parseInt(cmykMatch[3], 10), 0, 100) / 100;
+            var k = clamp(parseInt(cmykMatch[4], 10), 0, 100) / 100;
+            return {
+                r: Math.round(255 * (1 - c) * (1 - k)),
+                g: Math.round(255 * (1 - m) * (1 - k)),
+                b: Math.round(255 * (1 - y) * (1 - k))
+            };
+        }
+
+        // 6) Raw CSS functional: rgb(r g b), hsl(h s% l%)
         var rawRgb = str.match(/^(\d{1,3})\s+(\d{1,3})\s+(\d{1,3})$/);
         if (rawRgb) {
             return {
@@ -980,9 +996,15 @@
 
     // ===== UPDATE UI =====
 
+    // Stores original parsed format values to avoid round-trip precision loss
+    var _lastParsed = null;
+
     function updateColor(r, g, b) {
         var hex = rgbToHex(r, g, b);
-        var hsl = rgbToHsl(r, g, b);
+        // Use original parsed values if available (avoids HSL↔RGB precision drift)
+        var hsl = _lastParsed && _lastParsed.format === 'hsl'
+            ? { h: _lastParsed.h, s: _lastParsed.s, l: _lastParsed.l }
+            : rgbToHsl(r, g, b);
         var cmyk = rgbToCmyk(r, g, b);
 
         var rgbStr = 'rgb(' + r + ', ' + g + ', ' + b + ')';
@@ -1013,11 +1035,16 @@
             }
         });
 
-        // Update picker and text input (if not the source)
+        // Update picker (always) and text input (only from picker changes)
         if (!ignoreInput) {
             ignoreInput = true;
             colorPicker.value = hex;
-            colorInput.value = hex;
+            // Only update text input if the source is NOT the text input itself
+            // (preserve user's original format like rgb(), hsl(), cmyk(), etc.)
+            if (!window._fromTextInput) {
+                colorInput.value = hex;
+            }
+            window._fromTextInput = false;
             ignoreInput = false;
         }
     }
@@ -1040,7 +1067,24 @@
         if (ignoreInput) return;
         clearTimeout(inputTimer);
         inputTimer = setTimeout(function() {
-            var rgb = parseColorString(colorInput.value);
+            window._fromTextInput = true;
+            var val = colorInput.value;
+            var rgb = parseColorString(val);
+
+            // Store original parsed format for precision preservation
+            _lastParsed = null;
+            if (rgb) {
+                // Detect which format the user typed
+                var lower = val.trim().toLowerCase();
+                var hslMatch = lower.match(/^hsl/);
+                var cmykMatch = lower.match(/^cmyk/);
+                if (hslMatch) {
+                    var parts = val.match(/(\d{1,3})\D+(\d{1,3})\D+(\d{1,3})/);
+                    if (parts) {
+                        _lastParsed = { format: 'hsl', h: clamp(parseInt(parts[1],10),0,360), s: clamp(parseInt(parts[2],10),0,100), l: clamp(parseInt(parts[3],10),0,100) };
+                    }
+                }
+            }
             if (rgb) {
                 updateColor(rgb.r, rgb.g, rgb.b);
                 addToHistory(rgb.r, rgb.g, rgb.b);
