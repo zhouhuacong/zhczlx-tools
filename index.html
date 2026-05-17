@@ -37,10 +37,11 @@
     }
 
     /* ===== LANGUAGE SWITCHER ===== */
-    .lang-switcher {
-      position: relative;
-      display: inline-block;
-    }
+.lang-switcher {
+  position: relative;
+  display: inline-block;
+  margin-left: auto;
+}
     .lang-switcher select {
       appearance: none;
       -webkit-appearance: none;
@@ -107,6 +108,112 @@
       background: rgba(16, 185, 129, 0.1);
     }
 
+    /* ===== FEATURED JSON SECTION ===== */
+    .featured-json { margin-bottom: 32px; }
+    .featured-json-card {
+      display: block;
+      background: linear-gradient(135deg, var(--accent-light) 0%, rgba(139,92,246,0.08) 100%);
+      border: 2px solid var(--accent);
+      border-radius: var(--radius-xl);
+      padding: 28px 28px 20px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+    .featured-json-card::before {
+      content: '{ }';
+      position: absolute;
+      right: -20px;
+      bottom: -30px;
+      font-size: 120px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      opacity: 0.04;
+      color: var(--accent);
+      pointer-events: none;
+      line-height: 1;
+    }
+    .featured-json-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(59,130,246,0.15);
+      border-color: var(--accent-hover);
+    }
+    .featured-json-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 12px;
+      border-radius: var(--radius-full);
+      background: var(--accent);
+      color: white;
+      margin-bottom: 12px;
+    }
+    .featured-json-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .featured-json-icon {
+      font-size: 42px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      flex-shrink: 0;
+      line-height: 1;
+      margin-top: 2px;
+    }
+    .featured-json-content h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+    .featured-json-content p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .featured-json-content p strong {
+      color: var(--accent);
+    }
+    .featured-json-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .featured-json-features span {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.12);
+      white-space: nowrap;
+    }
+    .featured-json-cta {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      transition: gap var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .featured-json-card:hover .featured-json-cta {
+      gap: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .featured-json-content { flex-direction: column; gap: 12px; }
+      .featured-json-icon { font-size: 32px; }
+      .featured-json-card { padding: 20px; }
+      .featured-json-features span { white-space: normal; }
+    }
+
     @media (prefers-color-scheme: dark) {
       .tool-card .tag.hot {
         background: rgba(239, 68, 68, 0.15);
@@ -127,12 +234,13 @@
       <span data-i18n="header.logo">Tools</span>
     </a>
     <nav class="header-nav">
-      <a href="password-generator.html"><span>🔑</span> <span data-i18n="nav.password">Password Generator</span></a>
-      <a href="unit-converter.html"><span>📐</span> <span data-i18n="nav.unit">Unit Converter</span></a>
-      <a href="text-counter.html"><span>📊</span> <span data-i18n="nav.counter">Text Counter</span></a>
-      <a href="text-case.html"><span>🔤</span> <span data-i18n="nav.case">Case Converter</span></a>
-      <a href="uuid-generator.html"><span>🆔</span> <span data-i18n="nav.uuid">UUID Generator</span></a>
-      <a href="color-converter.html"><span>🎨</span> <span data-i18n="nav.color">Color Converter</span></a>
+      <a href="password-generator.html" title="🔑 Password Generator">🔑</a>
+      <a href="unit-converter.html" title="📐 Unit Converter">📐</a>
+      <a href="text-counter.html" title="📊 Text Counter">📊</a>
+      <a href="text-case.html" title="🔤 Case Converter">🔤</a>
+      <a href="uuid-generator.html" title="🆔 UUID Generator">🆔</a>
+      <a href="color-converter.html" title="🎨 Color Converter">🎨</a>
+      <a href="json-formatter.html" title="{ } JSON Formatter">{ }</a>
     </nav>
     <div class="lang-switcher">
       <select id="langSwitcher" aria-label="Select language">
@@ -161,6 +269,29 @@
         <span data-i18n="hero.tag.mobile">📱 Mobile Ready</span>
         <span data-i18n="hero.tag.dark">🌙 Dark Mode</span>
       </div>
+    </section>
+
+    <!-- ===== FEATURED: JSON FORMATTER ===== -->
+    <section class="featured-json">
+      <a href="json-formatter.html" class="featured-json-card">
+        <div class="featured-json-badge" data-i18n="json.badge">⭐ FEATURED</div>
+        <div class="featured-json-content">
+          <div class="featured-json-icon">{ }</div>
+          <div>
+            <h2 data-i18n="json.title">JSON Formatter &amp; Viewer</h2>
+            <p data-i18n="json.desc">The most powerful JSON tool you'll ever need. Supports <strong>JSON5</strong> — comments, trailing commas, single quotes. Auto-fix broken JSON. Visual tree view with fold, expand, and copy subtree. <strong>No other online tool does this.</strong></p>
+            <div class="featured-json-features">
+              <span data-i18n="json.f1">✅ JSON5 (comments + trailing commas)</span>
+              <span data-i18n="json.f2">🔄 Auto-fix malformed JSON</span>
+              <span data-i18n="json.f3">🌳 Tree view with fold/expand</span>
+              <span data-i18n="json.f4">📋 Copy any subtree</span>
+              <span data-i18n="json.f5">⛶ Fullscreen mode</span>
+              <span data-i18n="json.f6">📄 Paste auto-format</span>
+            </div>
+          </div>
+        </div>
+        <div class="featured-json-cta" data-i18n="json.cta">Try JSON Formatter →</div>
+      </a>
     </section>
 
     <!-- ===== TOOL GRID ===== -->
@@ -214,6 +345,14 @@
         <span class="tag new" data-i18n="card.color.tag">✨ New</span>
       </a>
 
+      <!-- JSON Formatter (end of grid) -->
+      <a href="json-formatter.html" class="tool-card animate-in">
+        <div class="tool-card-icon">{ }</div>
+        <h3 data-i18n="card.json.title">JSON Formatter</h3>
+        <p data-i18n="card.json.desc">JSON5 parser with comments, trailing commas, auto-fix. Tree view with fold, expand, and copy subtree.</p>
+        <span class="tag" data-i18n="card.json.tag">Tool</span>
+      </a>
+
     </div>
   </div>
 </main>
@@ -252,6 +391,20 @@
       'nav.case': 'Case Converter',
       'nav.uuid': 'UUID Generator',
       'nav.color': 'Color Converter',
+      'nav.json': 'JSON',
+      'json.badge': '⭐ FEATURED',
+      'json.title': 'JSON Formatter & Viewer',
+      'json.desc': "The most powerful JSON tool you'll ever need. Supports <strong>JSON5</strong> — comments, trailing commas, single quotes. Auto-fix broken JSON. Visual tree view with fold, expand, and copy subtree. <strong>No other online tool does this.</strong>",
+      'json.f1': '✅ JSON5 (comments + trailing commas)',
+      'json.f2': '🔄 Auto-fix malformed JSON',
+      'json.f3': '🌳 Tree view with fold/expand',
+      'json.f4': '📋 Copy any subtree',
+      'json.f5': '⛶ Fullscreen mode',
+      'json.f6': '📄 Paste auto-format',
+      'json.cta': 'Try JSON Formatter →',
+      'card.json.title': 'JSON Formatter',
+      'card.json.desc': 'JSON5 parser with comments, trailing commas, auto-fix. Tree view with fold, expand, and copy subtree.',
+      'card.json.tag': 'Tool',
       'hero.title': '🔧 Online Tools',
       'hero.subtitle': 'Free, efficient, ready-to-use developer tools that run entirely in your browser — no data ever uploaded to any server.',
       'hero.tag.client': '⚡ Client-Side',
